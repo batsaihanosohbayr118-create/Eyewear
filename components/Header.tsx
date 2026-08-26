@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { nav } from "@/content/site";
@@ -39,16 +38,15 @@ export default function Header({ settings }: { settings: Settings }) {
       <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 h-20 flex items-center justify-between">
         <Link
           href="/"
-          className="flex items-center gap-2 group"
+          className="flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 shadow-[0_10px_30px_rgba(6,24,38,0.18)] ring-1 ring-white/60 transition-transform duration-300 hover:scale-[1.02]"
           aria-label={`${settings.fullName} — нүүр хуудас`}
         >
-          <Image
-            src="/logo.png"
+          <img
+            src="/logo.png?v=3"
             alt={settings.fullName}
             width={180}
             height={92}
-            priority
-            className="h-14 w-auto lg:h-16"
+            className="h-11 w-auto object-contain sm:h-12 lg:h-14"
           />
         </Link>
 
