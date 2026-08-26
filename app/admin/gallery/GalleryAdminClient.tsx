@@ -27,6 +27,8 @@ export default function GalleryAdminClient({
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<GalleryImage | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [newAlt, setNewAlt] = useState("");
   const [newSpan, setNewSpan] = useState<"" | "row-span-2">("");
@@ -98,11 +100,24 @@ export default function GalleryAdminClient({
     }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Энэ зургийг устгах уу?")) return;
-    const res = await fetch(`/api/gallery/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      setImages((prev) => prev.filter((img) => img.id !== id));
+  async function handleDelete() {
+    if (!deleteTarget) return;
+
+    setDeletingId(deleteTarget.id);
+    setError(null);
+
+    try {
+      const res = await fetch(`/api/gallery/${deleteTarget.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? "Зураг устгахад алдаа гарлаа.");
+      }
+      setImages((prev) => prev.filter((img) => img.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Тодорхойгүй алдаа.");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -269,7 +284,11 @@ export default function GalleryAdminClient({
                   <button type="button" onClick={() => setEditingId(img.id)} className={editBtn}>
                     Засах
                   </button>
-                  <button type="button" onClick={() => handleDelete(img.id)} className={deleteBtn}>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteTarget(img)}
+                    className={deleteBtn}
+                  >
                     Устгах
                   </button>
                 </div>
@@ -278,6 +297,65 @@ export default function GalleryAdminClient({
           )}
         </div>
       </div>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/55 px-4 py-6 backdrop-blur-sm">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-ink/10 bg-white text-ink shadow-2xl shadow-ink/25">
+            <div className="border-b border-ink/10 px-6 py-5">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-red-500">
+                Устгах
+              </p>
+              <h2 className="mt-2 font-display text-2xl leading-tight">
+                Энэ зургийг устгах уу?
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-ink/55">
+                Устгасны дараа энэ зураг галерейгаас харагдахгүй болно.
+              </p>
+            </div>
+
+            <div className="flex gap-4 px-6 py-5">
+              <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-ink/5">
+                {imageSrc(deleteTarget.src, "") && (
+                  <Image
+                    src={imageSrc(deleteTarget.src)}
+                    alt={deleteTarget.alt}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="line-clamp-2 font-display text-lg leading-snug">
+                  {deleteTarget.alt}
+                </p>
+                <p className="mt-1 text-[12px] text-ink/45">
+                  {deleteTarget.span === "row-span-2" ? "Том зураг" : "Энгийн зураг"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col-reverse gap-3 border-t border-ink/10 bg-ink/[0.02] px-6 py-5 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deletingId === deleteTarget.id}
+                className="inline-flex h-11 items-center justify-center rounded-lg border border-ink/15 bg-white px-5 text-[13px] font-medium text-ink/65 transition-colors hover:border-ink/30 hover:text-ink disabled:opacity-50"
+              >
+                Цуцлах
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deletingId === deleteTarget.id}
+                className="inline-flex h-11 items-center justify-center rounded-lg bg-red-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+              >
+                {deletingId === deleteTarget.id ? "Устгаж байна..." : "Устгах"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
