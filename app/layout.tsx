@@ -35,8 +35,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: settings.seo.description,
     icons: {
-      icon: [{ url: "/favicon.svg?v=2", type: "image/svg+xml" }],
-      shortcut: [{ url: "/favicon.svg?v=2", type: "image/svg+xml" }],
+      icon: [{ url: "/favicon.svg?v=4", type: "image/svg+xml" }],
+      shortcut: [{ url: "/favicon.svg?v=4", type: "image/svg+xml" }],
     },
     openGraph: {
       title: settings.seo.defaultTitle,
