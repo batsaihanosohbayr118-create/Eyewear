@@ -1,0 +1,44 @@
+[
+  {
+    "id": "g1",
+    "src": "https://images.unsplash.com/photo-1486250944723-86bca2b15b06?auto=format&fit=crop&w=1200&q=80",
+    "alt": "Оптик дэлгүүрийн хананд өрсөн шилний хүрээнүүд",
+    "span": "row-span-2",
+    "order": 0
+  },
+  {
+    "id": "g2",
+    "src": "https://images.unsplash.com/photo-1517948430535-1e2469d314fe?auto=format&fit=crop&w=1200&q=80",
+    "alt": "Хараа шалгах самбарын өмнө нүдний шил барьсан зураг",
+    "span": "",
+    "order": 1
+  },
+  {
+    "id": "g3",
+    "src": "https://images.unsplash.com/photo-1743385729254-55aa926f24b4?auto=format&fit=crop&w=1200&q=80",
+    "alt": "Цэнхэр дэвсгэр дээрх сольдог линзтэй нүдний шил",
+    "span": "",
+    "order": 2
+  },
+  {
+    "id": "g4",
+    "src": "https://images.unsplash.com/photo-1701252374715-b5d8ab0b5f2c?auto=format&fit=crop&w=1200&q=80",
+    "alt": "Тунгалаг оптик хүрээний ойрын зураг",
+    "span": "row-span-2",
+    "order": 3
+  },
+  {
+    "id": "g5",
+    "src": "https://images.unsplash.com/photo-1576210117723-cd06449a467d?auto=format&fit=crop&w=1200&q=80",
+    "alt": "Хараа шалгах үсгийн самбар",
+    "span": "",
+    "order": 4
+  },
+  {
+    "id": "g6",
+    "src": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1200&q=80",
+    "alt": "Нарны шилний бүтээгдэхүүний ойрын зураг",
+    "span": "",
+    "order": 5
+  }
+]

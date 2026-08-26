@@ -1,0 +1,74 @@
+[
+  {
+    "id": "p001",
+    "name": "Daily Clear",
+    "category": "optical",
+    "description": "Өдөр тутмын ажил, сургууль, дэлгэцийн хэрэглээнд тохиромжтой хөнгөн оптик хүрээ.",
+    "price": 189000,
+    "image": "https://images.unsplash.com/photo-1701252374715-b5d8ab0b5f2c?auto=format&fit=crop&w=1200&q=80",
+    "featured": true
+  },
+  {
+    "id": "p002",
+    "name": "Blue Guard",
+    "category": "premium",
+    "description": "Компьютер, утасны дэлгэцийн хэрэглээнд зориулсан blue filter хамгаалалттай линзний багц.",
+    "price": 240000,
+    "image": "https://images.unsplash.com/photo-1743385729254-55aa926f24b4?auto=format&fit=crop&w=1200&q=80",
+    "featured": true
+  },
+  {
+    "id": "p003",
+    "name": "Urban Sun",
+    "category": "sunglasses",
+    "description": "UV хамгаалалттай, хотын өдөр тутмын хэрэглээнд тохирсон нарны шил.",
+    "price": 220000,
+    "image": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1200&q=80",
+    "featured": true
+  },
+  {
+    "id": "p004",
+    "name": "Office Fit",
+    "category": "optical",
+    "description": "Ажлын өдөр удаан зүүхэд хамар, чихэнд тухтай суух дөрвөлжин оптик хүрээ.",
+    "price": 210000,
+    "image": "https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&w=1200&q=80",
+    "featured": false
+  },
+  {
+    "id": "p005",
+    "name": "Clip-On Set",
+    "category": "new",
+    "description": "Нэг хүрээнд оптик болон нарны шилний хэрэглээг хослуулах соронзон clip-on сет.",
+    "price": 290000,
+    "image": "https://images.unsplash.com/photo-1743385729254-55aa926f24b4?auto=format&fit=crop&w=1200&q=80",
+    "featured": true
+  },
+  {
+    "id": "p006",
+    "name": "Kids Comfort",
+    "category": "optical",
+    "description": "Хүүхдийн өдөр тутмын хөдөлгөөнд тохирсон бат бөх, уян хатан хүрээ.",
+    "price": 165000,
+    "image": "https://images.unsplash.com/photo-1486250944723-86bca2b15b06?auto=format&fit=crop&w=1200&q=80",
+    "featured": false
+  },
+  {
+    "id": "p007",
+    "name": "Thin Lens",
+    "category": "premium",
+    "description": "Өндөр диоптртой хэрэглэгчдэд зориулсан нимгэн, хөнгөн, цэвэр харагдах линзний сонголт.",
+    "price": 320000,
+    "image": "https://images.unsplash.com/photo-1517948430535-1e2469d314fe?auto=format&fit=crop&w=1200&q=80",
+    "featured": false
+  },
+  {
+    "id": "p008",
+    "name": "Weekend Shade",
+    "category": "sunglasses",
+    "description": "Амралт, аялал, жолоодлогод тохирсон хөнгөн нарны шил.",
+    "price": 195000,
+    "image": "https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=1200&q=80",
+    "featured": false
+  }
+]
