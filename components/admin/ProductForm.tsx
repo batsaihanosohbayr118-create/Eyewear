@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { Product, Category } from "@/lib/db";
@@ -10,6 +10,13 @@ const field =
   "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-[15px] text-ink placeholder:text-ink/30 outline-none transition-colors focus:border-gold focus:ring-2 focus:ring-gold/15";
 const label =
   "block text-[11px] font-mono tracking-[0.14em] uppercase text-ink/45 mb-2";
+const categoryAccents = [
+  "from-sky-400 to-blue-600",
+  "from-emerald-400 to-teal-600",
+  "from-amber-300 to-orange-500",
+  "from-rose-300 to-pink-500",
+  "from-violet-300 to-indigo-500",
+];
 
 export default function ProductForm({
   product,
@@ -32,7 +39,22 @@ export default function ProductForm({
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const categoryMenuRef = useRef<HTMLDivElement>(null);
   const productImageSrc = imageSrc(values.image, "");
+  const selectedCategory =
+    categories.find((c) => c.slug === values.category) ?? categories[0];
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (!categoryMenuRef.current?.contains(event.target as Node)) {
+        setCategoryOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, []);
 
   async function handleImageUpload(file: File) {
     setUploading(true);
@@ -155,17 +177,88 @@ export default function ProductForm({
           <div className="grid grid-cols-2 gap-5">
             <div>
               <label className={label}>Ангилал</label>
-              <select
-                value={values.category}
-                onChange={(e) => setValues((v) => ({ ...v, category: e.target.value }))}
-                className={`${field} appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 20 20%22 fill=%22%23061826%22 opacity=%220.4%22><path d=%22M5.5 7.5l4.5 4.5 4.5-4.5%22 stroke=%22%23061826%22 stroke-opacity=%220.4%22 stroke-width=%221.4%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>')] bg-no-repeat bg-[right_1rem_center]`}
-              >
-                {categories.map((c) => (
-                  <option key={c.slug} value={c.slug}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
+              <div ref={categoryMenuRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setCategoryOpen((open) => !open)}
+                  className={`${field} flex items-center justify-between gap-3 bg-gradient-to-r from-white via-sky-50/80 to-blue-50 pr-3 text-left shadow-[0_10px_28px_rgba(0,104,255,0.08)] hover:border-gold/45 hover:shadow-[0_14px_34px_rgba(0,104,255,0.13)]`}
+                  aria-haspopup="listbox"
+                  aria-expanded={categoryOpen}
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span
+                      className={`h-2.5 w-2.5 shrink-0 rounded-full bg-gradient-to-br ${
+                        categoryAccents[
+                          Math.max(
+                            0,
+                            categories.findIndex((c) => c.slug === selectedCategory?.slug)
+                          ) % categoryAccents.length
+                        ]
+                      } shadow-[0_0_0_4px_rgba(73,182,255,0.12)]`}
+                    />
+                    <span className="truncate">
+                      {selectedCategory?.label ?? "Ангилал сонгох"}
+                    </span>
+                  </span>
+                  <span
+                    className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gold/10 text-gold-dark transition-transform ${
+                      categoryOpen ? "rotate-180" : ""
+                    }`}
+                    aria-hidden="true"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                      <path
+                        d="M5.5 7.5 10 12l4.5-4.5"
+                        stroke="currentColor"
+                        strokeWidth="1.7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                </button>
+
+                {categoryOpen && (
+                  <div
+                    className="absolute left-0 right-0 top-full z-30 mt-2 max-h-64 overflow-y-auto rounded-xl border border-gold/20 bg-white p-2 shadow-[0_24px_60px_rgba(6,24,38,0.16)]"
+                    role="listbox"
+                  >
+                    {categories.map((c, index) => {
+                      const selected = c.slug === values.category;
+
+                      return (
+                        <button
+                          key={c.slug}
+                          type="button"
+                          onClick={() => {
+                            setValues((v) => ({ ...v, category: c.slug }));
+                            setCategoryOpen(false);
+                          }}
+                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[14px] transition-colors ${
+                            selected
+                              ? "bg-gold text-white shadow-sm"
+                              : "text-ink/75 hover:bg-sky-50 hover:text-ink"
+                          }`}
+                          role="option"
+                          aria-selected={selected}
+                        >
+                          <span
+                            className={`h-2.5 w-2.5 shrink-0 rounded-full bg-gradient-to-br ${
+                              categoryAccents[index % categoryAccents.length]
+                            } ${selected ? "shadow-[0_0_0_4px_rgba(255,255,255,0.24)]" : ""}`}
+                          />
+                          <span className="min-w-0 flex-1 truncate">{c.label}</span>
+                          {selected && (
+                            <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-white/80">
+                              Сонгосон
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <label className={label}>Үнэ</label>
