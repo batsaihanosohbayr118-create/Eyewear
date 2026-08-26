@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+import { put } from "@vercel/blob";
 import { nanoid } from "nanoid";
 import { createGalleryImage, getGalleryImages } from "@/lib/db";
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "gallery");
-
 async function saveUploadedFile(file: File): Promise<string> {
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  const ext = path.extname(file.name) || ".jpg";
-  const filename = `${nanoid(10)}${ext}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(path.join(UPLOAD_DIR, filename), buffer);
-  return `/uploads/gallery/${filename}`;
+  const ext = file.name.split(".").pop() || "jpg";
+  const filename = `gallery/${nanoid(10)}.${ext}`;
+  const blob = await put(filename, file, {
+    access: "public",
+  });
+  return blob.url; // Vercel Blob-ийн бүрэн URL буцаана
 }
 
 export async function GET() {

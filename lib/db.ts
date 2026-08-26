@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
+import { put, head } from "@vercel/blob";
 
 export type Product = {
   id: string;
@@ -47,18 +48,61 @@ export type GalleryImage = {
   order: number;
 };
 
-const DB_PATH = path.join(process.cwd(), "data", "products.json");
-const CATEGORIES_PATH = path.join(process.cwd(), "data", "categories.json");
-const SETTINGS_PATH = path.join(process.cwd(), "data", "settings.json");
-const GALLERY_PATH = path.join(process.cwd(), "data", "gallery.json");
+// ---------- Local seed files (унших зөвхөн, эхний load-д ашиглана) ----------
+
+const LOCAL_DB_PATH = path.join(process.cwd(), "data", "products.json");
+const LOCAL_CATEGORIES_PATH = path.join(process.cwd(), "data", "categories.json");
+const LOCAL_SETTINGS_PATH = path.join(process.cwd(), "data", "settings.json");
+const LOCAL_GALLERY_PATH = path.join(process.cwd(), "data", "gallery.json");
+
+// ---------- Blob pathnames (унших/бичих хоёуланд) ----------
+
+const BLOB_PRODUCTS = "data/products.json";
+const BLOB_CATEGORIES = "data/categories.json";
+const BLOB_SETTINGS = "data/settings.json";
+const BLOB_GALLERY = "data/gallery.json";
+
+/**
+ * Blob-оос JSON унших. Хэрэв Blob дээр байхгүй бол (анхны удаа)
+ * local seed файлаас уншиж, fallback болгоно.
+ */
+async function readJsonBlob<T>(
+  pathname: string,
+  localSeedPath: string
+): Promise<T> {
+  try {
+    const info = await head(pathname);
+    const res = await fetch(info.url, { cache: "no-store" });
+    if (!res.ok) throw new Error("blob fetch failed");
+    return (await res.json()) as T;
+  } catch {
+    // Blob хараахан үүсээгүй бол local seed файлаас уншина
+    const raw = await fs.readFile(localSeedPath, "utf-8");
+    return JSON.parse(raw) as T;
+  }
+}
+
+/**
+ * JSON-ыг Blob руу бичих. addRandomSuffix: false ашигласнаар
+ * URL тогтмол хэвээр байна (дахин бичихэд дахин хайх шаардлагагүй).
+ */
+async function writeJsonBlob<T>(pathname: string, data: T): Promise<void> {
+  await put(pathname, JSON.stringify(data, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: "application/json",
+  });
+}
+
+// ---------- Products ----------
 
 async function readAll(): Promise<Product[]> {
-  const raw = await fs.readFile(DB_PATH, "utf-8");
-  return JSON.parse(raw) as Product[];
+  return readJsonBlob<Product[]>(BLOB_PRODUCTS, LOCAL_DB_PATH);
 }
 
 async function writeAll(products: Product[]): Promise<void> {
-  await fs.writeFile(DB_PATH, JSON.stringify(products, null, 2), "utf-8");
+  await writeJsonBlob(BLOB_PRODUCTS, products);
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -100,6 +144,8 @@ export async function deleteProduct(id: string): Promise<boolean> {
   return true;
 }
 
+// ---------- Categories ----------
+
 function slugify(label: string): string {
   const base = label
     .toLowerCase()
@@ -110,12 +156,11 @@ function slugify(label: string): string {
 }
 
 async function readCategories(): Promise<Category[]> {
-  const raw = await fs.readFile(CATEGORIES_PATH, "utf-8");
-  return JSON.parse(raw) as Category[];
+  return readJsonBlob<Category[]>(BLOB_CATEGORIES, LOCAL_CATEGORIES_PATH);
 }
 
 async function writeCategories(categories: Category[]): Promise<void> {
-  await fs.writeFile(CATEGORIES_PATH, JSON.stringify(categories, null, 2), "utf-8");
+  await writeJsonBlob(BLOB_CATEGORIES, categories);
 }
 
 export async function getCategories(): Promise<Category[]> {
@@ -155,9 +200,10 @@ export async function deleteCategory(slug: string): Promise<boolean> {
   return true;
 }
 
+// ---------- Settings ----------
+
 export async function getSettings(): Promise<Settings> {
-  const raw = await fs.readFile(SETTINGS_PATH, "utf-8");
-  return JSON.parse(raw) as Settings;
+  return readJsonBlob<Settings>(BLOB_SETTINGS, LOCAL_SETTINGS_PATH);
 }
 
 export async function updateSettings(
@@ -170,20 +216,22 @@ export async function updateSettings(
     contact: { ...current.contact, ...input.contact },
     seo: { ...current.seo, ...input.seo },
   };
-  await fs.writeFile(SETTINGS_PATH, JSON.stringify(next, null, 2), "utf-8");
+  await writeJsonBlob(BLOB_SETTINGS, next);
   return next;
 }
 
 // ---------- Gallery ----------
 
 async function readGallery(): Promise<GalleryImage[]> {
-  const raw = await fs.readFile(GALLERY_PATH, "utf-8");
-  const images = JSON.parse(raw) as GalleryImage[];
+  const images = await readJsonBlob<GalleryImage[]>(
+    BLOB_GALLERY,
+    LOCAL_GALLERY_PATH
+  );
   return images.sort((a, b) => a.order - b.order);
 }
 
 async function writeGallery(images: GalleryImage[]): Promise<void> {
-  await fs.writeFile(GALLERY_PATH, JSON.stringify(images, null, 2), "utf-8");
+  await writeJsonBlob(BLOB_GALLERY, images);
 }
 
 export async function getGalleryImages(): Promise<GalleryImage[]> {
