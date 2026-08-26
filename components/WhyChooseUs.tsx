@@ -25,13 +25,13 @@ const advantages = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="bg-ivory text-ink py-24 md:py-32">
-      <div className="max-w-content mx-auto px-6 md:px-10">
+    <section className="bg-ivory text-ink py-20 md:py-24 lg:py-32">
+      <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10">
         <Reveal>
           <p className="font-mono text-[11px] tracking-[0.28em] uppercase text-gold-dark mb-4">
             Яагаад Happy Optical
           </p>
-          <h2 className="font-display text-4xl md:text-5xl max-w-xl leading-[1.05] mb-16 text-balance">
+          <h2 className="font-display text-4xl md:text-[2.75rem] lg:text-5xl max-w-2xl lg:max-w-xl leading-[1.05] mb-12 md:mb-16 text-balance">
             Тод хараа, эвтэйхэн зүүлт, найдвартай үйлчилгээ.
           </h2>
         </Reveal>

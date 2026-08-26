@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { Product, Category } from "@/lib/db";
+import { imageSrc } from "@/lib/image-src";
 
 const field =
   "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-[15px] text-ink placeholder:text-ink/30 outline-none transition-colors focus:border-gold focus:ring-2 focus:ring-gold/15";
@@ -31,6 +32,7 @@ export default function ProductForm({
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const productImageSrc = imageSrc(values.image, "");
 
   async function handleImageUpload(file: File) {
     setUploading(true);
@@ -82,9 +84,9 @@ export default function ProductForm({
         <div>
           <p className={label}>Бүтээгдэхүүний зураг</p>
           <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-ink/[0.03] border border-dashed border-ink/15">
-            {values.image ? (
+            {productImageSrc ? (
               <>
-                <Image src={values.image} alt="" fill className="object-cover" />
+                <Image src={productImageSrc} alt="" fill className="object-cover" />
                 <label className="absolute inset-x-3 bottom-3 flex items-center justify-center gap-2 rounded-lg bg-ink/70 backdrop-blur-sm text-ivory text-[12px] tracking-[0.1em] uppercase py-2.5 cursor-pointer hover:bg-ink/85 transition-colors">
                   {uploading ? "Байршуулж байна…" : "Зураг солих"}
                   <input

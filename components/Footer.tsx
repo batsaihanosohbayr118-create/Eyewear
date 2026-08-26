@@ -79,8 +79,8 @@ function socialIcon(label: string) {
 export default function Footer({ settings }: { settings: Settings }) {
   return (
     <footer className="bg-ink border-t border-line/60">
-      <div className="max-w-content mx-auto px-6 md:px-10 py-16 grid gap-12 md:grid-cols-4">
-        <div className="md:col-span-2">
+      <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 py-14 md:py-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
+        <div className="sm:col-span-2">
           <div className="flex items-center gap-2 mb-4">
             <Image
               src="/logo.png"
@@ -151,7 +151,7 @@ export default function Footer({ settings }: { settings: Settings }) {
       </div>
 
       <div className="border-t border-line/50">
-        <div className="max-w-content mx-auto px-6 md:px-10 py-6 flex flex-col sm:flex-row justify-between gap-2 text-[12px] text-ivory/35">
+        <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 py-6 flex flex-col sm:flex-row justify-between gap-2 text-[12px] text-ivory/35">
           <p>© {new Date().getFullYear()} {settings.fullName}. Бүх эрх хуулиар хамгаалагдсан.</p>
           <p className="font-mono">Founded {settings.founded}</p>
         </div>

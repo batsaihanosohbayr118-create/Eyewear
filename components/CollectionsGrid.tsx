@@ -20,10 +20,10 @@ export default function CollectionsGrid({
 
   return (
     <div>
-      <div className="flex flex-wrap gap-x-8 gap-y-3 border-b border-line/50 pb-6 mb-12">
+      <div className="flex flex-wrap gap-x-6 gap-y-3 border-b border-line/50 pb-6 mb-10 md:mb-12 lg:gap-x-8">
         <button
           onClick={() => setActive("all")}
-          className={`text-[13px] tracking-[0.14em] uppercase pb-1 border-b transition-colors duration-300 ${
+          className={`text-[12px] tracking-[0.12em] uppercase pb-1 border-b transition-colors duration-300 md:text-[13px] md:tracking-[0.14em] ${
             active === "all"
               ? "text-ivory border-gold"
               : "text-ivory/45 border-transparent hover:text-ivory/80"
@@ -35,7 +35,7 @@ export default function CollectionsGrid({
           <button
             key={c.slug}
             onClick={() => setActive(c.slug)}
-            className={`text-[13px] tracking-[0.14em] uppercase pb-1 border-b transition-colors duration-300 ${
+            className={`text-[12px] tracking-[0.12em] uppercase pb-1 border-b transition-colors duration-300 md:text-[13px] md:tracking-[0.14em] ${
               active === c.slug
                 ? "text-ivory border-gold"
                 : "text-ivory/45 border-transparent hover:text-ivory/80"
@@ -51,7 +51,7 @@ export default function CollectionsGrid({
           Энэ ангилалд одоогоор бүтээгдэхүүн алга.
         </p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+        <div className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-x-6 md:gap-y-12">
           {filtered.map((product) => (
             <ProductCard key={product.id} product={product} categories={categories} />
           ))}

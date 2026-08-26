@@ -19,9 +19,10 @@ export default async function AdminDashboardPage() {
         </div>
         <Link
           href="/admin/products/new"
-          className="bg-gold text-ivory px-6 py-3 rounded-lg text-[13px] tracking-[0.12em] uppercase hover:bg-gold-dark transition-colors"
+          aria-label="Бүтээгдэхүүн нэмэх"
+          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gold text-xl leading-none text-ivory hover:bg-gold-dark transition-colors"
         >
-          + Бүтээгдэхүүн нэмэх
+          +
         </Link>
       </div>
 

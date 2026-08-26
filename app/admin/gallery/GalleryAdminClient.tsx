@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
 import type { GalleryImage } from "@/lib/db";
+import { imageSrc } from "@/lib/image-src";
 
 const primaryBtn =
   "rounded-lg bg-blue-600 px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-50";
@@ -223,7 +224,15 @@ export default function GalleryAdminClient({
                 className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:px-6"
               >
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-ink/5">
-                  <Image src={img.src} alt={img.alt} fill sizes="64px" className="object-cover" />
+                  {imageSrc(img.src, "") && (
+                    <Image
+                      src={imageSrc(img.src)}
+                      alt={img.alt}
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                    />
+                  )}
                 </div>
 
                 <div className="min-w-0 flex-1">
@@ -290,6 +299,7 @@ function EditRow({
   const [span, setSpan] = useState<"" | "row-span-2">(image.span);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const previewSrc = imageSrc(image.src, "");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -304,7 +314,9 @@ function EditRow({
       className="flex flex-col gap-4 bg-gold/[0.04] px-4 py-5 sm:flex-row sm:px-6"
     >
       <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-ink/5">
-        <Image src={image.src} alt={image.alt} fill sizes="64px" className="object-cover" />
+        {previewSrc && (
+          <Image src={previewSrc} alt={image.alt} fill sizes="64px" className="object-cover" />
+        )}
       </div>
 
       <div className="flex-1 space-y-3">

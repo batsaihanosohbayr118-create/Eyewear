@@ -1,15 +1,19 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Settings } from "@/lib/db";
+import { imageSrc } from "@/lib/image-src";
 
 export default function SettingsForm({ settings }: { settings: Settings }) {
   const router = useRouter();
   const [values, setValues] = useState(settings);
+  const [uploadingHeroImage, setUploadingHeroImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const heroPreviewSrc = imageSrc(values.heroImage, "");
 
   function updateContact<K extends keyof Settings["contact"]>(
     key: K,
@@ -60,6 +64,27 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
 
   function removeSocialRow(index: number) {
     setValues((v) => ({ ...v, social: v.social.filter((_, i) => i !== index) }));
+  }
+
+  async function handleHeroImageUpload(file: File) {
+    setUploadingHeroImage(true);
+    setError("");
+    setSaved(false);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/upload", { method: "POST", body: formData });
+    setUploadingHeroImage(false);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "Зураг байршуулахад алдаа гарлаа.");
+      return;
+    }
+
+    const data = await res.json();
+    setValues((v) => ({ ...v, heroImage: data.url }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -135,6 +160,71 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
                 />
               </div>
             </div>
+          </section>
+
+          <section className={card}>
+            <h2 className="font-display text-xl">Нүүр зураг</h2>
+            <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-dashed border-ink/15 bg-ink/[0.03]">
+              {heroPreviewSrc ? (
+                <>
+                  <Image
+                    src={heroPreviewSrc}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                  <label className="absolute inset-x-3 bottom-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-ink/70 py-2.5 text-[12px] uppercase tracking-[0.1em] text-ivory backdrop-blur-sm transition-colors hover:bg-ink/85">
+                    {uploadingHeroImage ? "Байршуулж байна…" : "Зураг солих"}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleHeroImageUpload(file);
+                      }}
+                    />
+                  </label>
+                </>
+              ) : (
+                <label className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-3 text-ink/35 transition-colors hover:bg-gold/5 hover:text-gold-dark">
+                  <svg
+                    width="36"
+                    height="36"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                  <span className="text-[13px]">
+                    {uploadingHeroImage ? "Байршуулж байна…" : "Зураг сонгох"}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleHeroImageUpload(file);
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+            <p className="mt-3 text-[12px] text-ink/40">
+              Эсвэл доор шууд зурган URL оруулж болно
+            </p>
+            <input
+              value={values.heroImage}
+              onChange={(e) => setValues((v) => ({ ...v, heroImage: e.target.value }))}
+              placeholder="https://…"
+              className={`${field} mt-2 text-[13px] py-2.5`}
+            />
           </section>
 
           <section className={card}>
@@ -294,7 +384,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
       <div>
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || uploadingHeroImage}
           className="bg-gold text-ivory px-7 py-3 rounded-lg text-[13px] tracking-[0.12em] uppercase hover:bg-gold-dark transition-colors disabled:opacity-50"
         >
           {saving ? "Хадгалж байна…" : "Өөрчлөлт хадгалах"}

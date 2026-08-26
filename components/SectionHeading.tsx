@@ -19,7 +19,7 @@ export default function SectionHeading({
         {eyebrow}
       </p>
       <h2
-        className={`font-display text-4xl md:text-5xl leading-[1.05] text-balance ${
+        className={`font-display text-4xl md:text-[2.75rem] lg:text-5xl leading-[1.05] text-balance ${
           align === "center" ? "mx-auto max-w-2xl" : "max-w-xl"
         }`}
       >

@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Settings } from "@/lib/db";
+import { imageSrc } from "@/lib/image-src";
 
 export default function Hero({ settings }: { settings: Settings }) {
   const [loaded, setLoaded] = useState(false);
+  const heroImageSrc = imageSrc(settings.heroImage);
 
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 80);
@@ -14,7 +16,7 @@ export default function Hero({ settings }: { settings: Settings }) {
   }, []);
 
   return (
-    <section className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-ink">
+    <section className="relative h-[92svh] min-h-[560px] max-h-[760px] w-full overflow-hidden bg-ink sm:h-[100svh] sm:min-h-[640px] md:min-h-[700px] lg:max-h-none">
       <div className="absolute inset-0">
         <div
           className={`absolute inset-0 origin-left bg-ink transition-transform duration-[1400ms] ease-signature z-20 ${
@@ -22,20 +24,20 @@ export default function Hero({ settings }: { settings: Settings }) {
           }`}
         />
         <Image
-          src="https://images.unsplash.com/photo-1563136047-fb51e000144a?auto=format&fit=crop&w=2200&q=85"
+          src={heroImageSrc}
           alt="Нүдний шил зүүсэн хүний ойрын зураг"
           fill
           priority
           sizes="100vw"
-          className={`object-cover object-center transition-transform duration-[1800ms] ease-signature ${
-            loaded ? "scale-100" : "scale-110"
+          className={`object-cover object-[42%_center] transition-transform duration-[1800ms] ease-signature sm:object-center ${
+            loaded ? "scale-100" : "scale-[1.03] sm:scale-110"
           }`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-ink/25" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/75 via-ink/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-ink/25 sm:via-ink/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/20 to-transparent sm:from-ink/75" />
       </div>
 
-      <div className="relative z-10 h-full max-w-content mx-auto px-6 md:px-10 flex flex-col justify-end pb-20 md:pb-28">
+      <div className="relative z-10 h-full max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 flex flex-col justify-end pb-14 sm:pb-20 md:pb-24 lg:pb-28">
         <p
           className={`font-mono text-[11px] tracking-[0.32em] uppercase text-gold-light mb-6 transition-all duration-700 ease-signature ${
             loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
@@ -46,7 +48,7 @@ export default function Hero({ settings }: { settings: Settings }) {
         </p>
 
         <h1
-          className={`font-display text-[13vw] leading-[0.95] sm:text-[8vw] md:text-[6vw] lg:text-[5.2vw] max-w-4xl text-balance transition-all duration-[900ms] ease-signature ${
+          className={`font-display text-[13vw] leading-[0.95] sm:text-[8vw] md:text-[6vw] lg:text-[5.2vw] xl:text-[4.7vw] max-w-4xl text-balance transition-all duration-[900ms] ease-signature ${
             loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
           style={{ transitionDelay: "620ms" }}
@@ -57,7 +59,7 @@ export default function Hero({ settings }: { settings: Settings }) {
         </h1>
 
         <p
-          className={`mt-6 max-w-md text-ivory/70 text-[15px] leading-relaxed transition-all duration-700 ease-signature ${
+          className={`mt-6 max-w-md md:max-w-lg text-ivory/70 text-[15px] md:text-base leading-relaxed transition-all duration-700 ease-signature ${
             loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
           style={{ transitionDelay: "760ms" }}
@@ -77,7 +79,7 @@ export default function Hero({ settings }: { settings: Settings }) {
             className="group relative inline-flex items-center gap-3 bg-gold text-ink px-8 py-4 text-[13px] tracking-[0.14em] uppercase overflow-hidden"
           >
             <span className="relative z-10 transition-colors duration-300 group-hover:text-ivory">
-              Хараагаа шалгуулах
+              Холбоо барих
             </span>
             <span className="absolute inset-0 bg-ink translate-y-full group-hover:translate-y-0 transition-transform duration-400 ease-signature" />
           </Link>
@@ -91,7 +93,7 @@ export default function Hero({ settings }: { settings: Settings }) {
       </div>
 
       <div
-        className={`absolute bottom-8 right-6 md:right-10 z-10 hidden sm:flex flex-col items-center gap-3 transition-opacity duration-700 ${
+        className={`absolute bottom-8 right-6 md:right-8 lg:right-10 z-10 hidden sm:flex flex-col items-center gap-3 transition-opacity duration-700 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
         style={{ transitionDelay: "1100ms" }}

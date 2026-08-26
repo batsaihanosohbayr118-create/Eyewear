@@ -2,14 +2,27 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type Direction = "up" | "right" | "left" | "down";
+
+const OFFSETS: Record<Direction, string> = {
+  up: "translateY(24px)",
+  down: "translateY(-24px)",
+  right: "translateX(-32px)",
+  left: "translateX(32px)",
+};
+
 export default function Reveal({
   children,
   delay = 0,
   className = "",
+  direction = "up",
+  duration = 700,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  direction?: Direction;
+  duration?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -20,10 +33,7 @@ export default function Reveal({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
+        setVisible(entry.isIntersecting);
       },
       { threshold: 0.15 }
     );
@@ -35,8 +45,13 @@ export default function Reveal({
   return (
     <div
       ref={ref}
-      className={`${visible ? "reveal-visible" : "reveal-init"} ${className}`}
-      style={{ animationDelay: visible ? `${delay}ms` : undefined }}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translate(0, 0)" : OFFSETS[direction],
+        transition: `opacity ${duration}ms ease-out, transform ${duration}ms ease-out`,
+        transitionDelay: `${delay}ms`,
+      }}
     >
       {children}
     </div>

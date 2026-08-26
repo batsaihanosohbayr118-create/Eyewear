@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
 import { put, head } from "@vercel/blob";
+import { FALLBACK_IMAGE_SRC, imageSrc } from "@/lib/image-src";
 
 export type Product = {
   id: string;
@@ -24,6 +25,7 @@ export type Settings = {
   tagline: string;
   description: string;
   founded: string;
+  heroImage: string;
   contact: {
     address: string;
     phone: string;
@@ -61,6 +63,23 @@ const BLOB_PRODUCTS = "data/products.json";
 const BLOB_CATEGORIES = "data/categories.json";
 const BLOB_SETTINGS = "data/settings.json";
 const BLOB_GALLERY = "data/gallery.json";
+const DEFAULT_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1563136047-fb51e000144a?auto=format&fit=crop&w=2200&q=85";
+
+function sanitizeProduct(product: Product): Product {
+  return { ...product, image: imageSrc(product.image, FALLBACK_IMAGE_SRC) };
+}
+
+function sanitizeGalleryImage(image: GalleryImage): GalleryImage {
+  return { ...image, src: imageSrc(image.src, FALLBACK_IMAGE_SRC) };
+}
+
+function sanitizeSettings(settings: Settings): Settings {
+  return {
+    ...settings,
+    heroImage: imageSrc(settings.heroImage, DEFAULT_HERO_IMAGE),
+  };
+}
 
 /**
  * Blob-оос JSON унших. Хэрэв Blob дээр байхгүй бол (анхны удаа)
@@ -106,19 +125,21 @@ async function writeAll(products: Product[]): Promise<void> {
 }
 
 export async function getProducts(): Promise<Product[]> {
-  return readAll();
+  const products = await readAll();
+  return products.map(sanitizeProduct);
 }
 
 export async function getProduct(id: string): Promise<Product | undefined> {
   const products = await readAll();
-  return products.find((p) => p.id === id);
+  const product = products.find((p) => p.id === id);
+  return product ? sanitizeProduct(product) : undefined;
 }
 
 export async function createProduct(
   input: Omit<Product, "id">
 ): Promise<Product> {
   const products = await readAll();
-  const product: Product = { id: nanoid(8), ...input };
+  const product: Product = sanitizeProduct({ id: nanoid(8), ...input });
   products.unshift(product);
   await writeAll(products);
   return product;
@@ -131,7 +152,7 @@ export async function updateProduct(
   const products = await readAll();
   const index = products.findIndex((p) => p.id === id);
   if (index === -1) return null;
-  products[index] = { ...products[index], ...input };
+  products[index] = sanitizeProduct({ ...products[index], ...input });
   await writeAll(products);
   return products[index];
 }
@@ -203,7 +224,8 @@ export async function deleteCategory(slug: string): Promise<boolean> {
 // ---------- Settings ----------
 
 export async function getSettings(): Promise<Settings> {
-  return readJsonBlob<Settings>(BLOB_SETTINGS, LOCAL_SETTINGS_PATH);
+  const settings = await readJsonBlob<Settings>(BLOB_SETTINGS, LOCAL_SETTINGS_PATH);
+  return sanitizeSettings(settings);
 }
 
 export async function updateSettings(
@@ -216,6 +238,7 @@ export async function updateSettings(
     contact: { ...current.contact, ...input.contact },
     seo: { ...current.seo, ...input.seo },
   };
+  next.heroImage = imageSrc(next.heroImage, DEFAULT_HERO_IMAGE);
   await writeJsonBlob(BLOB_SETTINGS, next);
   return next;
 }
@@ -227,7 +250,7 @@ async function readGallery(): Promise<GalleryImage[]> {
     BLOB_GALLERY,
     LOCAL_GALLERY_PATH
   );
-  return images.sort((a, b) => a.order - b.order);
+  return images.map(sanitizeGalleryImage).sort((a, b) => a.order - b.order);
 }
 
 async function writeGallery(images: GalleryImage[]): Promise<void> {
@@ -250,7 +273,11 @@ export async function createGalleryImage(
 ): Promise<GalleryImage> {
   const images = await readGallery();
   const maxOrder = images.reduce((max, i) => Math.max(max, i.order), -1);
-  const image: GalleryImage = { id: nanoid(8), order: maxOrder + 1, ...input };
+  const image: GalleryImage = sanitizeGalleryImage({
+    id: nanoid(8),
+    order: maxOrder + 1,
+    ...input,
+  });
   images.push(image);
   await writeGallery(images);
   return image;
@@ -263,7 +290,7 @@ export async function updateGalleryImage(
   const images = await readGallery();
   const index = images.findIndex((i) => i.id === id);
   if (index === -1) return null;
-  images[index] = { ...images[index], ...input };
+  images[index] = sanitizeGalleryImage({ ...images[index], ...input });
   await writeGallery(images);
   return images[index];
 }

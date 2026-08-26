@@ -36,7 +36,7 @@ export default function Header({ settings }: { settings: Settings }) {
         scrolled ? "bg-ink/90 backdrop-blur-md border-b border-line/60" : "bg-transparent"
       }`}
     >
-      <div className="max-w-content mx-auto px-6 md:px-10 h-20 flex items-center justify-between">
+      <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 h-20 flex items-center justify-between">
         <Link
           href="/"
           className="flex items-center gap-2 group"
@@ -48,36 +48,44 @@ export default function Header({ settings }: { settings: Settings }) {
             width={180}
             height={92}
             priority
-            className="h-14 w-auto md:h-16"
+            className="h-14 w-auto lg:h-16"
           />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-10">
-          {nav.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`relative text-[13px] tracking-[0.14em] uppercase py-2 transition-colors duration-300 ${
-                  active ? "text-ivory" : "text-ivory/60 hover:text-ivory"
-                }`}
-              >
-                {item.label}
-                <span
-                  className={`absolute left-0 -bottom-0.5 h-px bg-gold transition-all duration-300 ease-signature ${
-                    active ? "w-full" : "w-0"
+        <div className="hidden lg:flex items-center gap-8 xl:gap-10">
+          <nav className="flex items-center gap-8 xl:gap-10">
+            {nav.map((item) => {
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`relative text-[13px] tracking-[0.14em] uppercase py-2 transition-colors duration-300 ${
+                    active ? "text-ivory" : "text-ivory/60 hover:text-ivory"
                   }`}
-                />
-              </Link>
-            );
-          })}
-        </nav>
+                >
+                  {item.label}
+                  <span
+                    className={`absolute left-0 -bottom-0.5 h-px bg-gold transition-all duration-300 ease-signature ${
+                      active ? "w-full" : "w-0"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
+          </nav>
+          <Link
+            href="/admin/login"
+            className="inline-flex h-10 items-center justify-center border border-gold/60 px-4 text-[12px] uppercase tracking-[0.12em] text-gold-light transition-colors duration-300 hover:bg-gold hover:text-ink"
+          >
+            Админаар нэвтрэх
+          </Link>
+        </div>
 
         <button
           type="button"
           onClick={() => setMenuOpen((v) => !v)}
-          className="md:hidden relative w-9 h-9 flex flex-col items-center justify-center gap-[6px]"
+          className="lg:hidden relative w-9 h-9 flex flex-col items-center justify-center gap-[6px]"
           aria-label={menuOpen ? "Цэсийг хаах" : "Цэсийг нээх"}
           aria-expanded={menuOpen}
         >
@@ -95,7 +103,7 @@ export default function Header({ settings }: { settings: Settings }) {
       </div>
 
       <div
-        className={`md:hidden fixed inset-x-0 top-20 bottom-0 bg-ink transition-transform duration-500 ease-signature ${
+        className={`lg:hidden fixed inset-x-0 top-20 bottom-0 bg-ink transition-transform duration-500 ease-signature ${
           menuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -110,6 +118,12 @@ export default function Header({ settings }: { settings: Settings }) {
               {item.label}
             </Link>
           ))}
+          <Link
+            href="/admin/login"
+            className="mt-6 inline-flex h-12 items-center justify-center bg-gold px-5 text-[13px] uppercase tracking-[0.14em] text-ink transition-colors duration-300 hover:bg-gold-light"
+          >
+            Админаар нэвтрэх
+          </Link>
         </nav>
       </div>
     </header>
