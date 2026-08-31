@@ -91,7 +91,11 @@ async function readJsonBlob<T>(
 ): Promise<T> {
   try {
     const info = await head(pathname);
-    const res = await fetch(info.url, { cache: "no-store" });
+    // CDN edge cache-г тойрч шинэ хувилбарыг унших: URL тогтмол
+    // хэвээр байдаг тул (addRandomSuffix: false) query параметрт
+    // бодит цагийг залгаж, унших болгонд өөр URL болгоно.
+    const bustedUrl = `${info.url}?v=${Date.now()}`;
+    const res = await fetch(bustedUrl, { cache: "no-store" });
     if (!res.ok) throw new Error("blob fetch failed");
     return (await res.json()) as T;
   } catch {

@@ -24,7 +24,7 @@ export default async function AboutPage() {
       <section className="relative h-[58vh] min-h-[380px] overflow-hidden md:h-[62vh] md:min-h-[440px] lg:h-[70vh]">
         <div className="absolute inset-0 animate-[kenburns_18s_ease-in-out_infinite_alternate]">
           <Image
-            src="https://images.unsplash.com/photo-1486250944723-86bca2b15b06?auto=format&fit=crop&w=2200&q=85"
+            src="https://images.unsplash.com/photo-1544177586-c9b9fb1f45c2?auto=format&fit=crop&w=2200&q=85"
             alt="Оптик дэлгүүрийн шилний тавиур"
             fill
             sizes="100vw"
