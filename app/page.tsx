@@ -2,9 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import Hero from "@/components/Hero";
 import Reveal from "@/components/Reveal";
-import ProductCard from "@/components/ProductCard";
-import WhyChooseUs from "@/components/WhyChooseUs";
+import Arrow from "@/components/Arrow";
+import FeatureStrip from "@/components/FeatureStrip";
+import FeaturedCarousel from "@/components/FeaturedCarousel";
+import CategoryTiles from "@/components/CategoryTiles";
 import { getProducts, getCategories, getSettings } from "@/lib/db";
+
+const eyebrow = "text-[11px] md:text-[12px] tracking-[0.32em] uppercase text-ivory/80 mb-5";
 
 export default async function HomePage() {
   const [products, categories, settings] = await Promise.all([
@@ -12,77 +16,80 @@ export default async function HomePage() {
     getCategories(),
     getSettings(),
   ]);
-  const featured = products.filter((p) => p.featured).slice(0, 4);
+  const featuredOnly = products.filter((p) => p.featured);
+  const featured = (featuredOnly.length >= 3 ? featuredOnly : products).slice(0, 8);
 
   return (
     <>
       <Hero settings={settings} />
+      <FeatureStrip />
 
-      {/* About teaser */}
-      <section className="py-20 md:py-24 lg:py-32 bg-ink">
-        <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 grid lg:grid-cols-2 gap-12 md:gap-14 lg:gap-20 items-center">
-          <Reveal className="relative aspect-[4/3] w-full max-w-[640px] overflow-hidden order-2 justify-self-center lg:order-1 lg:justify-self-start">
-            <Image
-              src="https://images.unsplash.com/photo-1517948430535-1e2469d314fe?auto=format&fit=crop&w=1000&q=85"
-              alt="Хараа шалгах самбарын өмнө барьсан нүдний шил"
-              fill
-              sizes="(min-width: 1024px) 560px, (min-width: 768px) 640px, 100vw"
-              className="object-cover"
-            />
-          </Reveal>
-          <Reveal delay={150} className="order-1 max-w-2xl lg:order-2">
-            <p className="font-mono text-[11px] tracking-[0.28em] uppercase text-gold-light mb-4">
-              Бидний тухай
-            </p>
-            <h2 className="font-display text-4xl md:text-[2.75rem] lg:text-5xl leading-[1.05] mb-6 text-balance">
-              Хараанд тань таарсан линз, царайнд тань зохих хүрээ.
-            </h2>
-            <p className="text-ivory/60 leading-relaxed mb-8 max-w-xl lg:max-w-md">
-              Happy Optical баг харааны хэмжилт, линзний зөв сонголт,
-              хүрээний тохируулгыг нэг дор хийж өгдөг. Өдөр тутмын ажил,
-              жолоо барих, дэлгэцийн хэрэглээнд тань тохирсон шийдлийг санал болгоно.
-            </p>
-            <Link
-              href="/about"
-              className="inline-flex text-[13px] tracking-[0.14em] uppercase text-ivory border-b border-gold pb-1 hover:text-gold-light transition-colors duration-300"
-            >
-              Дэлгэрэнгүй унших
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Featured collections */}
-      <section className="py-20 md:py-24 lg:py-32 bg-ink border-t border-line/40">
-        <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10">
-          <Reveal className="flex flex-col items-start gap-6 mb-12 md:mb-14 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="font-mono text-[11px] tracking-[0.28em] uppercase text-gold-light mb-4">
-                Онцлох цуглуулга
-              </p>
-              <h2 className="font-display text-4xl md:text-[2.75rem] lg:text-5xl max-w-2xl lg:max-w-xl leading-[1.05] text-balance">
-                Өдөр тутамд эвтэйхэн, хараанд зөв хүрээнүүд.
+      {/* Featured collection */}
+      <section className="bg-ink py-16 md:py-20 lg:py-24">
+        <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 lg:pr-28 grid grid-cols-1 gap-10 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr] lg:gap-14 items-center">
+          {/* Button sits right of the text whenever it fits (tablets), wraps below otherwise. */}
+          <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-8 lg:block">
+            <div className="min-w-0">
+              <p className={eyebrow}>Онцлох цуглуулга</p>
+              <h2 className="font-display font-medium text-[2.6rem] md:text-5xl leading-[1.05] text-balance">
+                Шилдэг загварууд,
+                <br />
+                <span className="italic text-gold-light">сонгодог ур хийц</span>
               </h2>
+              <p className="mt-6 text-[14px] text-ivory/70 leading-relaxed max-w-xs">
+                Гараар өнгөлсөн ацетат, хөнгөн титан, алтан шармал хүрээ —
+                дүр төрхөө тодотгох хосоо сонгоорой.
+              </p>
             </div>
             <Link
               href="/collections"
-              className="text-[13px] tracking-[0.14em] uppercase text-ivory/70 border-b border-ivory/30 pb-1 hover:text-ivory hover:border-ivory transition-colors duration-300"
+              className="group shrink-0 lg:mt-8 btn-sweep btn-sweep-outline inline-flex h-12 items-center gap-4 border border-ivory/40 px-6 text-[14px] text-ivory"
             >
-              Бүх бүтээгдэхүүнийг үзэх
+              Бүгдийг үзэх
+              <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </Reveal>
 
-          <div className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-x-6 md:gap-y-12">
-            {featured.map((product, i) => (
-              <Reveal key={product.id} delay={i * 100}>
-                <ProductCard product={product} categories={categories} />
-              </Reveal>
-            ))}
-          </div>
+          <FeaturedCarousel products={featured} categories={categories} />
         </div>
       </section>
 
-      <WhyChooseUs />
+      <CategoryTiles categories={categories} products={products} />
+
+      {/* About teaser */}
+      <section className="bg-charcoal py-20 md:py-24 lg:py-28 border-t border-ivory/10">
+        <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <Reveal className="relative aspect-[4/3] w-full overflow-hidden order-2 lg:order-1">
+            <Image
+              src="/images/home-about.png"
+              alt="Гантиг ширээн дээр байрлуулсан тунгалаг хүрээтэй нүдний шил"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover object-[58%_center]"
+            />
+          </Reveal>
+          <Reveal delay={150} className="order-1 max-w-xl lg:order-2">
+            <p className={eyebrow}>{settings.name}-ийн тухай</p>
+            <h2 className="font-display font-medium text-[2.6rem] md:text-5xl leading-[1.05] mb-6 text-balance">
+              Хүрээ бүр түүхтэй,{" "}
+              <span className="italic text-gold-light">харц бүр онцгой.</span>
+            </h2>
+            <p className="text-ivory/65 leading-relaxed mb-8">
+              {settings.fullName} бол тансаг нүдний шилний бутик. Бид
+              сонгомол брэндийн хүрээг хувийн хараа шалгалт, мэргэжлийн
+              тохируулгатай хослуулж, таны хэв маяг, хараанд яг тохирох хосыг
+              санал болгодог.
+            </p>
+            <Link
+              href="/about"
+              className="group btn-sweep btn-sweep-gold inline-flex h-12 items-center gap-4 bg-gold px-8 text-[14px] text-ink"
+            >
+              Дэлгэрэнгүй
+              <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </Reveal>
+        </div>
+      </section>
     </>
   );
 }

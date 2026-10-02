@@ -1,40 +1,40 @@
 {
-  "name": "Happy Optical",
-  "fullName": "Happy Optical",
-  "tagline": "Тод хараа, зөв тохирсон шил",
-  "description": "Happy Optical нь хараа шалгалт, оптик линз, өдөр тутмын болон нарны шилний хүрээг нэг дор санал болгодог хараа зүйн төв.",
-  "founded": "2016",
-  "heroImage": "https://images.unsplash.com/photo-1563136047-fb51e000144a?auto=format&fit=crop&w=2200&q=85",
+  "name": "HEX",
+  "fullName": "HEX Luxury Eyewear",
+  "tagline": "Харц бүрт тансаг мэдрэмж",
+  "description": "HEX Luxury Eyewear бол дизайнер хүрээ, премиум линз, хувийн хараа шалгалтыг нэг дор санал болгодог тансаг нүдний шилний бутик.",
+  "founded": "2018",
   "contact": {
-    "address": "Энхтайваны Өргөн Чөлөө 13, ЧД - 3 хороо, Улаанбаатар 15172",
-    "phone": "+976 94492081",
+    "address": "Чингисийн өргөн чөлөө 24, 2 давхар, СБД, Улаанбаатар",
+    "phone": "+976 8632 3873",
     "email": "",
     "hours": [
       {
-        "day": "Даваа - Баасан",
-        "time": "10:30 - 20:00"
-      },
-      {
         "day": "Бямба, Ням",
         "time": "11:00 - 20:00"
+      },
+      {
+        "day": "Даваа-Баасан",
+        "time": "10:30 - 20:00"
       }
     ],
-    "mapEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2674.0300171886643!2d106.9034317249456!3d47.91645664616091!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5d96925090daaaab%3A0xba695a27b9f69dcf!2sHappy%20Optical!5e0!3m2!1smn!2smn!4v1787653435072!5m2!1smn!2smn"
+    "mapEmbedUrl": "https://www.google.com/maps?q=Ulaanbaatar&output=embed"
   },
   "social": [
     {
-      "label": "Facebook",
-      "href": "https://www.facebook.com/profile.php/?id=100080013511997"
+      "label": "Instagram",
+      "href": "https://www.instagram.com/"
     },
     {
-      "label": "Messenger",
-      "href": "https://www.facebook.com/profile.php/?id=100080013511997"
+      "label": "Facebook",
+      "href": "https://www.facebook.com/"
     }
   ],
   "seo": {
-    "titleTemplate": "%s | Happy Optical",
-    "defaultTitle": "Happy Optical - Хараа зүйн төв",
-    "description": "Happy Optical - хараа шалгалт, оптик линз, нарны шил, өдөр тутмын нүдний шилний хүрээний сонголт.",
+    "titleTemplate": "%s | HEX Luxury Eyewear",
+    "defaultTitle": "HEX Luxury Eyewear — Тансаг нүдний шил",
+    "description": "HEX Luxury Eyewear — дизайнер оптик хүрээ, нарны шил, премиум линз болон хувийн хараа шалгалт.",
     "ogImage": "/og-image.jpg"
-  }
+  },
+  "heroImage": "/images/home-hero.png"
 }

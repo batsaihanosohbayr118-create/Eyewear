@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { nav } from "@/content/site";
 import type { Settings } from "@/lib/db";
+import Wordmark from "./Wordmark";
 
 function PinIcon() {
   return (
@@ -20,6 +20,15 @@ function PhoneIcon() {
         strokeLinejoin="round"
         strokeLinecap="round"
       />
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3 7l9 6 9-6" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -76,36 +85,71 @@ function socialIcon(label: string) {
   return <LinkIcon />;
 }
 
-export default function Footer({ settings }: { settings: Settings }) {
+function ArrowUpIcon() {
   return (
-    <footer className="bg-ink border-t border-line/60">
-      <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 py-14 md:py-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
-        <div className="sm:col-span-2">
-          <div className="flex items-center gap-2 mb-4">
-            <Image
-              src="/logo.png"
-              alt={settings.fullName}
-              width={180}
-              height={92}
-              className="h-20 w-auto"
-            />
-          </div>
-          <p className="text-ivory/55 text-sm leading-relaxed max-w-sm">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <path d="M12 19V5M6 11l6-6 6 6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ColumnTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-6">
+      <p className="text-[11px] tracking-[0.28em] uppercase text-gold-light">{children}</p>
+      <span className="mt-3 block h-px w-8 bg-gold/60" />
+    </div>
+  );
+}
+
+export default function Footer({ settings }: { settings: Settings }) {
+  const { contact } = settings;
+  // Weekday hours first, regardless of the order they were entered in admin.
+  const hours = [...contact.hours].sort(
+    (a, b) => Number(b.day.startsWith("Даваа")) - Number(a.day.startsWith("Даваа"))
+  );
+
+  return (
+    <footer id="contact" className="relative bg-ink scroll-mt-20">
+      {/* Gold hairline fading out at both ends */}
+      <div className="h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+
+      <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 py-16 md:py-20 grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_1.2fr_1fr] lg:gap-14">
+        {/* Brand */}
+        <div>
+          <Wordmark name={settings.name} className="h-11" />
+          <p className="mt-6 max-w-xs text-[14px] leading-relaxed text-ivory/55">
             {settings.description}
           </p>
+          {settings.social.length > 0 && (
+            <div className="mt-8 flex gap-3">
+              {settings.social.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={s.label}
+                  className="grid h-10 w-10 place-items-center rounded-full border border-ivory/15 text-ivory/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:bg-gold hover:text-ink"
+                >
+                  {socialIcon(s.label)}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
+        {/* Navigation */}
         <div>
-          <p className="text-[11px] tracking-[0.2em] uppercase text-ivory/40 mb-4">
-            Мэдээлэл
-          </p>
-          <ul className="space-y-3">
+          <ColumnTitle>Цэс</ColumnTitle>
+          <ul className="space-y-3.5">
             {nav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300"
+                  className="group inline-flex items-center text-[14px] text-ivory/65 transition-colors duration-300 hover:text-gold-light"
                 >
+                  <span className="h-px w-0 bg-gold transition-all duration-300 group-hover:mr-2 group-hover:w-3" />
                   {item.label}
                 </Link>
               </li>
@@ -113,47 +157,73 @@ export default function Footer({ settings }: { settings: Settings }) {
           </ul>
         </div>
 
+        {/* Contact */}
         <div>
-          <p className="text-[11px] tracking-[0.2em] uppercase text-ivory/40 mb-4">
-            Холбоо барих
-          </p>
-          <ul className="space-y-3 text-sm text-ivory/65">
-            <li className="flex items-start gap-2.5">
-              <span className="text-ivory/40 mt-0.5 shrink-0"><PinIcon /></span>
-              <span>{settings.contact.address}</span>
+          <ColumnTitle>Холбоо барих</ColumnTitle>
+          <ul className="space-y-4 text-[14px] text-ivory/65">
+            <li className="flex items-start gap-3">
+              <span className="mt-0.5 shrink-0 text-gold-light"><PinIcon /></span>
+              <span className="leading-relaxed">{contact.address}</span>
             </li>
-            <li className="flex items-center gap-2.5">
-              <span className="text-ivory/40 shrink-0"><PhoneIcon /></span>
-              <a href={`tel:${settings.contact.phone.replace(/\s/g, "")}`} className="hover:text-ivory transition-colors">
-                {settings.contact.phone}
+            <li className="flex items-center gap-3">
+              <span className="shrink-0 text-gold-light"><PhoneIcon /></span>
+              <a
+                href={`tel:${contact.phone.replace(/\s/g, "")}`}
+                className="transition-colors hover:text-gold-light"
+              >
+                {contact.phone}
               </a>
             </li>
-            <li>
-              <a href={`mailto:${settings.contact.email}`} className="hover:text-ivory transition-colors">
-                {settings.contact.email}
-              </a>
-            </li>
-            {settings.social.map((s) => (
-              <li key={s.label} className="flex items-center gap-2.5">
-                <span className="text-ivory/40 shrink-0">{socialIcon(s.label)}</span>
+            {contact.email && (
+              <li className="flex items-center gap-3">
+                <span className="shrink-0 text-gold-light"><MailIcon /></span>
                 <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-ivory transition-colors"
+                  href={`mailto:${contact.email}`}
+                  className="break-all transition-colors hover:text-gold-light"
                 >
-                  {s.label}
+                  {contact.email}
                 </a>
               </li>
-            ))}
+            )}
           </ul>
         </div>
+
+        {/* Opening hours */}
+        {hours.length > 0 && (
+          <div>
+            <ColumnTitle>Ажиллах цаг</ColumnTitle>
+            <ul className="text-[14px]">
+              {hours.map((h) => (
+                <li
+                  key={h.day}
+                  className="flex items-baseline justify-between gap-4 border-b border-ivory/10 py-3 first:pt-0"
+                >
+                  <span className="text-ivory/65">{h.day}</span>
+                  <span className="whitespace-nowrap text-ivory">{h.time}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
-      <div className="border-t border-line/50">
-        <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 py-6 flex flex-col sm:flex-row justify-between gap-2 text-[12px] text-ivory/35">
-          <p>© {new Date().getFullYear()} {settings.fullName}. Бүх эрх хуулиар хамгаалагдсан.</p>
-          <p className="font-mono">Founded {settings.founded}</p>
+      <div className="border-t border-ivory/10">
+        <div className="max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 py-6 flex flex-col-reverse items-start gap-4 text-[12px] text-ivory/40 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {new Date().getFullYear()} {settings.fullName}. Бүх эрх хуулиар хамгаалагдсан.
+          </p>
+          <div className="flex items-center gap-6">
+            <span className="tracking-[0.24em] uppercase text-gold-light/70">
+              Est. {settings.founded}
+            </span>
+            <a
+              href="#"
+              aria-label="Дээш буцах"
+              className="grid h-9 w-9 place-items-center rounded-full border border-ivory/15 text-ivory/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:text-gold-light"
+            >
+              <ArrowUpIcon />
+            </a>
+          </div>
         </div>
       </div>
     </footer>

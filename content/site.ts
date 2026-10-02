@@ -9,5 +9,6 @@ export const nav = [
   { label: "Бидний тухай", href: "/about" },
   { label: "Цуглуулга", href: "/collections" },
   { label: "Галерей", href: "/gallery" },
-  { label: "Холбоо барих", href: "/contact" },
+  // Scrolls to the contact block in the footer (present on every page).
+  { label: "Холбоо барих", href: "#contact" },
 ] as const;

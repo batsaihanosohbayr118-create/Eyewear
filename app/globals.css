@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 ::selection {
-  background-color: #49b6ff;
-  color: #061826;
+  background-color: #d9c096;
+  color: #0f0e0d;
 }
 
 html {
@@ -26,7 +26,7 @@ html {
 }
 
 *:focus-visible {
-  outline: 1.5px solid #49b6ff;
+  outline: 1.5px solid #d9c096;
   outline-offset: 3px;
 }
 
@@ -55,4 +55,46 @@ body {
   pointer-events: none;
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes loadingBar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+/* Button hover: a fill sweeps in from the left, and exits to the right on leave. */
+.btn-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--sweep);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-sweep:hover::before,
+.btn-sweep:focus-visible::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+/* Solid gold button → sweeps to ivory */
+.btn-sweep-gold {
+  --sweep: #f4efe8;
+}
+/* Outline button → sweeps to gold, text turns dark */
+.btn-sweep-outline {
+  --sweep: #c4a46f;
+}
+.btn-sweep-outline:hover,
+.btn-sweep-outline:focus-visible {
+  color: #0f0e0d;
+  border-color: #c4a46f;
 }

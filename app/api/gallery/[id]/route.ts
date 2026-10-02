@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import { nanoid } from "nanoid";
 import { deleteGalleryImage, getGalleryImage, updateGalleryImage } from "@/lib/db";
-
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "gallery");
-
-async function saveUploadedFile(file: File): Promise<string> {
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  const ext = path.extname(file.name) || ".jpg";
-  const filename = `${nanoid(10)}${ext}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(path.join(UPLOAD_DIR, filename), buffer);
-  return `/uploads/gallery/${filename}`;
-}
+import { isAdmin, saveImage, UploadError } from "@/lib/image-upload";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  if (!(await isAdmin(request))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const existing = await getGalleryImage(params.id);
   if (!existing) {
     return NextResponse.json({ error: "Зураг олдсонгүй." }, { status: 404 });
@@ -37,7 +28,13 @@ export async function PATCH(
   } = {};
 
   if (file instanceof File && file.size > 0) {
-    patch.src = await saveUploadedFile(file);
+    try {
+      patch.src = await saveImage(file, "gallery");
+    } catch (err) {
+      const message =
+        err instanceof UploadError ? err.message : "Зураг хадгалахад алдаа гарлаа.";
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
   } else if (typeof urlInput === "string" && urlInput.trim()) {
     patch.src = urlInput.trim();
   }
@@ -55,9 +52,13 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  if (!(await isAdmin(request))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const ok = await deleteGalleryImage(params.id);
   if (!ok) {
     return NextResponse.json({ error: "Зураг олдсонгүй." }, { status: 404 });

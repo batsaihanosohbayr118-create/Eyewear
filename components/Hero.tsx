@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Settings } from "@/lib/db";
 import { imageSrc } from "@/lib/image-src";
+import Arrow from "./Arrow";
 
 export default function Hero({ settings }: { settings: Settings }) {
   const [loaded, setLoaded] = useState(false);
@@ -15,93 +16,97 @@ export default function Hero({ settings }: { settings: Settings }) {
     return () => clearTimeout(t);
   }, []);
 
+  const fade = (delay: number) => ({
+    className: `transition-all duration-700 ease-signature ${
+      loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+    }`,
+    style: { transitionDelay: `${delay}ms` },
+  });
+
   return (
-    <section className="relative h-[92svh] min-h-[560px] max-h-[760px] w-full overflow-hidden bg-ink sm:h-[100svh] sm:min-h-[640px] md:min-h-[700px] lg:max-h-none">
+    <section className="relative w-full overflow-hidden bg-ink min-h-[640px] h-[100svh] max-h-[860px] lg:h-[92svh]">
+      {/* Image — full-bleed on mobile, right side on desktop */}
       <div className="absolute inset-0">
-        <div
-          className={`absolute inset-0 origin-left bg-ink transition-transform duration-[1400ms] ease-signature z-20 ${
-            loaded ? "scale-x-0" : "scale-x-100"
-          }`}
-        />
         <Image
           src={heroImageSrc}
-          alt="Нүдний шил зүүсэн хүний ойрын зураг"
+          alt="Нар жаргах үеийн далайн эрэг дээрх тунгалаг хүрээтэй нарны шил"
           fill
           priority
           sizes="100vw"
-          className={`object-cover object-[42%_center] transition-transform duration-[1800ms] ease-signature sm:object-center ${
-            loaded ? "scale-100" : "scale-[1.03] sm:scale-110"
+          className={`object-cover object-[72%_center] lg:object-center transition-transform duration-[1800ms] ease-signature ${
+            loaded ? "scale-100" : "scale-[1.06]"
           }`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-ink/25 sm:via-ink/20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/20 to-transparent sm:from-ink/75" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/45 to-transparent lg:via-ink/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-ink/40" />
+        <div className="absolute inset-0 bg-ink/45 lg:bg-transparent" />
       </div>
 
-      <div className="relative z-10 h-full max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 flex flex-col justify-end pb-14 sm:pb-20 md:pb-24 lg:pb-28">
-        <p
-          className={`font-mono text-[11px] tracking-[0.32em] uppercase text-gold-light mb-6 transition-all duration-700 ease-signature ${
-            loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "500ms" }}
-        >
-          Хараа зүйн төв - {settings.founded} оноос хойш
-        </p>
-
+      <div className="relative z-10 h-full max-w-content mx-auto px-5 sm:px-6 md:px-8 lg:px-10 flex flex-col justify-end pb-16 pt-28 lg:justify-center lg:pb-0 lg:pl-28 xl:pl-36">
         <h1
-          className={`font-display text-[13vw] leading-[0.95] sm:text-[8vw] md:text-[6vw] lg:text-[5.2vw] xl:text-[4.7vw] max-w-4xl text-balance transition-all duration-[900ms] ease-signature ${
+          className={`font-display font-medium text-[3.25rem] leading-[1.02] sm:text-6xl md:text-7xl xl:text-[5.5rem] max-w-3xl text-balance transition-all duration-[900ms] ease-signature ${
             loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
-          style={{ transitionDelay: "620ms" }}
+          style={{ transitionDelay: "520ms" }}
         >
-          Тод хараа.
+          Тансаг загвар,
           <br />
-          <span className="text-gold-light italic">Тохирсон шил.</span>
+          <span className="italic text-gold-light">тод</span>{" "}
+          <span className="text-gold-light">харц</span>
         </h1>
 
         <p
-          className={`mt-6 max-w-md md:max-w-lg text-ivory/70 text-[15px] md:text-base leading-relaxed transition-all duration-700 ease-signature ${
-            loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "760ms" }}
+          style={fade(680).style}
+          className={`${fade(680).className} mt-7 max-w-md text-ivory/75 text-[15px] md:text-base leading-relaxed`}
         >
-          {settings.tagline}. Мэргэжлийн хараа шалгалт, чанартай линз,
-          танд зохих хүрээг нэг дор сонгоорой.
+          {settings.tagline}. Дизайнер хүрээ, нарийн хийцтэй линз, хувийн
+          зөвлөгөө — таны дүр төрхийг тодотгох бүхэн нэг дор.
         </p>
 
-        <div
-          className={`mt-10 flex flex-wrap items-center gap-5 transition-all duration-700 ease-signature ${
-            loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "900ms" }}
-        >
-          <Link
-            href="/contact"
-            className="group relative inline-flex items-center gap-3 bg-gold text-ink px-8 py-4 text-[13px] tracking-[0.14em] uppercase overflow-hidden"
-          >
-            <span className="relative z-10 transition-colors duration-300 group-hover:text-ivory">
-              Холбоо барих
-            </span>
-            <span className="absolute inset-0 bg-ink translate-y-full group-hover:translate-y-0 transition-transform duration-400 ease-signature" />
-          </Link>
+        <div style={fade(820).style} className={`${fade(820).className} mt-10 flex flex-wrap items-center gap-4`}>
           <Link
             href="/collections"
-            className="text-[13px] tracking-[0.14em] uppercase text-ivory/75 border-b border-ivory/30 pb-1 hover:text-ivory hover:border-ivory transition-colors duration-300"
+            className="group btn-sweep btn-sweep-gold inline-flex h-12 items-center gap-4 bg-gold px-8 text-[14px] text-ink"
           >
             Цуглуулга үзэх
+            <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
+          <Link
+            href="#contact"
+            className="btn-sweep btn-sweep-outline inline-flex h-12 items-center border border-ivory/40 px-8 text-[14px] text-ivory"
+          >
+            Холбоо барих
           </Link>
         </div>
       </div>
 
+      {/* Vertical scroll hint */}
       <div
-        className={`absolute bottom-8 right-6 md:right-8 lg:right-10 z-10 hidden sm:flex flex-col items-center gap-3 transition-opacity duration-700 ${
+        className={`absolute left-6 xl:left-10 top-1/2 z-10 hidden lg:flex -translate-y-1/2 flex-col items-center gap-4 transition-opacity duration-700 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
         style={{ transitionDelay: "1100ms" }}
       >
-        <span className="font-mono text-[10px] tracking-[0.24em] text-ivory/40 [writing-mode:vertical-rl]">
+        <span className="text-[10px] tracking-[0.3em] text-ivory/60 [writing-mode:vertical-rl] rotate-180">
           SCROLL
         </span>
-        <span className="w-px h-10 bg-ivory/25" />
+        <span className="relative w-px h-24 bg-ivory/30">
+          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 border-r border-b border-ivory/50 rotate-45" />
+        </span>
+      </div>
+
+      {/* Right-side tagline */}
+      <div
+        className={`absolute right-0 top-[30%] z-10 hidden lg:flex -translate-y-1/2 items-center gap-5 transition-opacity duration-700 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+        style={{ transitionDelay: "1200ms" }}
+      >
+        <div className="text-right text-[11px] tracking-[0.3em] uppercase text-ivory/75 leading-[2.2]">
+          <p>Тансаг хийц</p>
+          <p>Мөнхийн загвар</p>
+        </div>
+        <span className="w-16 xl:w-24 h-px bg-ivory/40" />
       </div>
     </section>
   );

@@ -4,12 +4,13 @@ import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
 import type { GalleryImage } from "@/lib/db";
 import { imageSrc } from "@/lib/image-src";
+import { prepareImage } from "@/lib/prepare-image";
 
 const primaryBtn =
-  "rounded-lg bg-blue-600 px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-50";
+  "rounded-lg bg-gold px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-gold-dark disabled:opacity-50";
 const outlineBtn =
   "rounded-lg border px-3 py-1.5 text-[12px] font-medium shadow-sm transition-colors";
-const editBtn = `${outlineBtn} border-blue-200 bg-white text-blue-600 hover:border-blue-600 hover:bg-blue-600 hover:text-white`;
+const editBtn = `${outlineBtn} border-gold/30 bg-white text-gold-dark hover:border-gold hover:bg-gold hover:text-white`;
 const deleteBtn = `${outlineBtn} border-red-200 bg-white text-red-600 hover:border-red-600 hover:bg-red-600 hover:text-white`;
 const cancelBtn = `${outlineBtn} border-ink/10 bg-white text-ink/60 hover:border-ink/30 hover:text-ink`;
 const arrowBtn =
@@ -57,7 +58,7 @@ export default function GalleryAdminClient({
     }
 
     const formData = new FormData();
-    if (file) formData.append("file", file);
+    if (file) formData.append("file", await prepareImage(file));
     if (newUrl.trim()) formData.append("src", newUrl.trim());
     formData.append("alt", newAlt.trim());
     formData.append("span", newSpan);
@@ -90,13 +91,17 @@ export default function GalleryAdminClient({
     const formData = new FormData();
     formData.append("alt", patch.alt);
     formData.append("span", patch.span);
-    if (file) formData.append("file", file);
+    if (file) formData.append("file", await prepareImage(file));
 
+    setError(null);
     const res = await fetch(`/api/gallery/${id}`, { method: "PATCH", body: formData });
     if (res.ok) {
       const updated = (await res.json()) as GalleryImage;
       setImages((prev) => prev.map((img) => (img.id === id ? updated : img)));
       setEditingId(null);
+    } else {
+      const body = await res.json().catch(() => null);
+      setError(body?.error ?? "Зураг хадгалахад алдаа гарлаа.");
     }
   }
 
@@ -171,7 +176,7 @@ export default function GalleryAdminClient({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
                 className="block w-full text-sm text-ink/70 file:mr-3 file:rounded-lg file:border-0 file:bg-ink file:px-4 file:py-2 file:text-[12px] file:font-semibold file:text-gold-light"
               />
             </div>
@@ -417,7 +422,7 @@ function EditRow({
 
           <label className="cursor-pointer text-[12px] font-medium text-gold-dark underline-offset-2 hover:underline">
             Зураг солих
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" />
+            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" className="hidden" />
           </label>
         </div>
 

@@ -1,7 +1,8 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
-import { put, head } from "@vercel/blob";
+import { put, head, list, del } from "@vercel/blob";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { FALLBACK_IMAGE_SRC, imageSrc } from "@/lib/image-src";
 
 export type Product = {
@@ -82,20 +83,31 @@ function sanitizeSettings(settings: Settings): Settings {
 }
 
 /**
- * Blob-оос JSON унших. Хэрэв Blob дээр байхгүй бол (анхны удаа)
- * local seed файлаас уншиж, fallback болгоно.
+ * Blob-ийн CDN нь query параметрийг (?v=...) үл тоож, давхар бичсэн файлын
+ * хуучин хувилбарыг 30 хоног хүртэл кэшлэдэг. Тиймээс хадгалах бүрд шинэ,
+ * давтагдашгүй нэртэй файл үүсгэж ("data/gallery@<timestamp>-xxxx.json"),
+ * уншихдаа list()-ээр (CDN кэшгүй) хамгийн сүүлийн хувилбарыг олно.
  */
-async function readJsonBlob<T>(
+const VERSIONS_TO_KEEP = 5;
+
+const versionPrefix = (pathname: string) => pathname.replace(/\.json$/, "") + "@";
+
+async function listVersions(pathname: string) {
+  const prefix = versionPrefix(pathname);
+  const { blobs } = await list({ prefix });
+  const stamp = (p: string) => parseInt(p.slice(prefix.length), 10) || 0;
+  return blobs.sort((a, b) => stamp(b.pathname) - stamp(a.pathname));
+}
+
+async function fetchJsonBlob<T>(
   pathname: string,
   localSeedPath: string
 ): Promise<T> {
   try {
-    const info = await head(pathname);
-    // CDN edge cache-г тойрч шинэ хувилбарыг унших: URL тогтмол
-    // хэвээр байдаг тул (addRandomSuffix: false) query параметрт
-    // бодит цагийг залгаж, унших болгонд өөр URL болгоно.
-    const bustedUrl = `${info.url}?v=${Date.now()}`;
-    const res = await fetch(bustedUrl, { cache: "no-store" });
+    const [latest] = await listVersions(pathname);
+    // Хувилбар хараахан байхгүй бол хуучин тогтмол нэртэй файлыг уншина
+    const url = latest?.url ?? (await head(pathname)).url;
+    const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error("blob fetch failed");
     return (await res.json()) as T;
   } catch {
@@ -105,23 +117,53 @@ async function readJsonBlob<T>(
   }
 }
 
+const blobTag = (pathname: string) => `blob:${pathname}`;
+
 /**
- * JSON-ыг Blob руу бичих. addRandomSuffix: false ашигласнаар
- * URL тогтмол хэвээр байна (дахин бичихэд дахин хайх шаардлагагүй).
+ * Blob уншилтыг Next.js-ийн data cache-д хадгална. Хуудас бүр Blob руу
+ * дахин хандахгүй тул шилжилт хурдан болно. Бичих үед (writeJsonBlob)
+ * revalidateTag-аар шууд шинэчлэгдэнэ; revalidate нь Blob-ыг гаднаас
+ * өөрчилсөн тохиолдлын нөөц хугацаа.
+ */
+function readJsonBlob<T>(
+  pathname: string,
+  localSeedPath: string,
+  fresh = false
+): Promise<T> {
+  // Өөрчлөлт хийхийн өмнөх уншилт кэшээс биш шууд Blob-оос байх ёстой —
+  // эс бөгөөс дараалсан хадгалалтууд бие биенээ дарж устгана.
+  if (fresh) return fetchJsonBlob<T>(pathname, localSeedPath);
+  return unstable_cache(
+    () => fetchJsonBlob<T>(pathname, localSeedPath),
+    ["blob-json", pathname],
+    { tags: [blobTag(pathname)], revalidate: 300 }
+  )();
+}
+
+/**
+ * JSON-ыг Blob руу шинэ хувилбар болгон бичих.
  */
 async function writeJsonBlob<T>(pathname: string, data: T): Promise<void> {
-  await put(pathname, JSON.stringify(data, null, 2), {
+  await put(`${versionPrefix(pathname)}${Date.now()}.json`, JSON.stringify(data, null, 2), {
     access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
+    addRandomSuffix: true,
     contentType: "application/json",
   });
+  revalidateTag(blobTag(pathname));
+
+  // Хуучин хувилбаруудыг цэвэрлэнэ (сүүлийн хэдийг нөөц болгон үлдээнэ)
+  try {
+    const stale = (await listVersions(pathname)).slice(VERSIONS_TO_KEEP);
+    if (stale.length) await del(stale.map((b) => b.url));
+  } catch {
+    // Цэвэрлэгээ амжилтгүй болсон ч хадгалалтад нөлөөгүй
+  }
 }
 
 // ---------- Products ----------
 
-async function readAll(): Promise<Product[]> {
-  return readJsonBlob<Product[]>(BLOB_PRODUCTS, LOCAL_DB_PATH);
+async function readAll(fresh = false): Promise<Product[]> {
+  return readJsonBlob<Product[]>(BLOB_PRODUCTS, LOCAL_DB_PATH, fresh);
 }
 
 async function writeAll(products: Product[]): Promise<void> {
@@ -142,7 +184,7 @@ export async function getProduct(id: string): Promise<Product | undefined> {
 export async function createProduct(
   input: Omit<Product, "id">
 ): Promise<Product> {
-  const products = await readAll();
+  const products = await readAll(true);
   const product: Product = sanitizeProduct({ id: nanoid(8), ...input });
   products.unshift(product);
   await writeAll(products);
@@ -153,7 +195,7 @@ export async function updateProduct(
   id: string,
   input: Partial<Omit<Product, "id">>
 ): Promise<Product | null> {
-  const products = await readAll();
+  const products = await readAll(true);
   const index = products.findIndex((p) => p.id === id);
   if (index === -1) return null;
   products[index] = sanitizeProduct({ ...products[index], ...input });
@@ -162,7 +204,7 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: string): Promise<boolean> {
-  const products = await readAll();
+  const products = await readAll(true);
   const next = products.filter((p) => p.id !== id);
   if (next.length === products.length) return false;
   await writeAll(next);
@@ -180,8 +222,8 @@ function slugify(label: string): string {
   return base || nanoid(6);
 }
 
-async function readCategories(): Promise<Category[]> {
-  return readJsonBlob<Category[]>(BLOB_CATEGORIES, LOCAL_CATEGORIES_PATH);
+async function readCategories(fresh = false): Promise<Category[]> {
+  return readJsonBlob<Category[]>(BLOB_CATEGORIES, LOCAL_CATEGORIES_PATH, fresh);
 }
 
 async function writeCategories(categories: Category[]): Promise<void> {
@@ -193,7 +235,7 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function createCategory(label: string): Promise<Category> {
-  const categories = await readCategories();
+  const categories = await readCategories(true);
   let slug = slugify(label);
   let suffix = 2;
   while (categories.some((c) => c.slug === slug)) {
@@ -209,7 +251,7 @@ export async function updateCategory(
   slug: string,
   label: string
 ): Promise<Category | null> {
-  const categories = await readCategories();
+  const categories = await readCategories(true);
   const index = categories.findIndex((c) => c.slug === slug);
   if (index === -1) return null;
   categories[index] = { ...categories[index], label };
@@ -218,7 +260,7 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(slug: string): Promise<boolean> {
-  const categories = await readCategories();
+  const categories = await readCategories(true);
   const next = categories.filter((c) => c.slug !== slug);
   if (next.length === categories.length) return false;
   await writeCategories(next);
@@ -227,15 +269,15 @@ export async function deleteCategory(slug: string): Promise<boolean> {
 
 // ---------- Settings ----------
 
-export async function getSettings(): Promise<Settings> {
-  const settings = await readJsonBlob<Settings>(BLOB_SETTINGS, LOCAL_SETTINGS_PATH);
+export async function getSettings(fresh = false): Promise<Settings> {
+  const settings = await readJsonBlob<Settings>(BLOB_SETTINGS, LOCAL_SETTINGS_PATH, fresh);
   return sanitizeSettings(settings);
 }
 
 export async function updateSettings(
   input: Partial<Settings>
 ): Promise<Settings> {
-  const current = await getSettings();
+  const current = await getSettings(true);
   const next: Settings = {
     ...current,
     ...input,
@@ -249,10 +291,11 @@ export async function updateSettings(
 
 // ---------- Gallery ----------
 
-async function readGallery(): Promise<GalleryImage[]> {
+async function readGallery(fresh = false): Promise<GalleryImage[]> {
   const images = await readJsonBlob<GalleryImage[]>(
     BLOB_GALLERY,
-    LOCAL_GALLERY_PATH
+    LOCAL_GALLERY_PATH,
+    fresh
   );
   return images.map(sanitizeGalleryImage).sort((a, b) => a.order - b.order);
 }
@@ -275,7 +318,7 @@ export async function getGalleryImage(
 export async function createGalleryImage(
   input: Omit<GalleryImage, "id" | "order">
 ): Promise<GalleryImage> {
-  const images = await readGallery();
+  const images = await readGallery(true);
   const maxOrder = images.reduce((max, i) => Math.max(max, i.order), -1);
   const image: GalleryImage = sanitizeGalleryImage({
     id: nanoid(8),
@@ -291,7 +334,7 @@ export async function updateGalleryImage(
   id: string,
   input: Partial<Omit<GalleryImage, "id">>
 ): Promise<GalleryImage | null> {
-  const images = await readGallery();
+  const images = await readGallery(true);
   const index = images.findIndex((i) => i.id === id);
   if (index === -1) return null;
   images[index] = sanitizeGalleryImage({ ...images[index], ...input });
@@ -300,7 +343,7 @@ export async function updateGalleryImage(
 }
 
 export async function deleteGalleryImage(id: string): Promise<boolean> {
-  const images = await readGallery();
+  const images = await readGallery(true);
   const next = images.filter((i) => i.id !== id);
   if (next.length === images.length) return false;
   await writeGallery(next);
@@ -310,7 +353,7 @@ export async function deleteGalleryImage(id: string): Promise<boolean> {
 export async function reorderGalleryImages(
   orderedIds: string[]
 ): Promise<GalleryImage[]> {
-  const images = await readGallery();
+  const images = await readGallery(true);
   const byId = new Map(images.map((i) => [i.id, i]));
   const next = orderedIds
     .map((id, index) => {

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Settings } from "@/lib/db";
 import { imageSrc } from "@/lib/image-src";
+import { prepareImage } from "@/lib/prepare-image";
 
 export default function SettingsForm({ settings }: { settings: Settings }) {
   const router = useRouter();
@@ -72,7 +73,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
     setSaved(false);
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", await prepareImage(file));
 
     const res = await fetch("/api/upload", { method: "POST", body: formData });
     setUploadingHeroImage(false);
@@ -178,7 +179,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
                     {uploadingHeroImage ? "Байршуулж байна…" : "Зураг солих"}
                     <input
                       type="file"
-                      accept="image/png,image/jpeg,image/webp"
+                      accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
@@ -206,7 +207,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
                   </span>
                   <input
                     type="file"
-                    accept="image/png,image/jpeg,image/webp"
+                    accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];

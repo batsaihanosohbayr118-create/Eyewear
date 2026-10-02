@@ -2,10 +2,10 @@
   {
     "id": "p001",
     "name": "Daily Clear",
-    "category": "optical",
+    "category": "оптик-хүрээ",
     "description": "Өдөр тутмын ажил, сургууль, дэлгэцийн хэрэглээнд тохиромжтой хөнгөн оптик хүрээ.",
     "price": 189000,
-    "image": "https://images.unsplash.com/photo-1701252374715-b5d8ab0b5f2c?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://images.unsplash.com/photo-1760337871482-9dd93e75fa88?auto=format&fit=crop&w=1200&q=85",
     "featured": true
   },
   {
@@ -14,7 +14,7 @@
     "category": "premium",
     "description": "Компьютер, утасны дэлгэцийн хэрэглээнд зориулсан blue filter хамгаалалттай линзний багц.",
     "price": 240000,
-    "image": "https://images.unsplash.com/photo-1743385729254-55aa926f24b4?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://images.unsplash.com/photo-1775543775816-1af434fc6708?auto=format&fit=crop&w=1200&q=85",
     "featured": true
   },
   {
@@ -23,16 +23,16 @@
     "category": "sunglasses",
     "description": "UV хамгаалалттай, хотын өдөр тутмын хэрэглээнд тохирсон нарны шил.",
     "price": 220000,
-    "image": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://images.unsplash.com/photo-1788500657788-ddd329542124?auto=format&fit=crop&w=1200&q=85",
     "featured": true
   },
   {
     "id": "p004",
     "name": "Office Fit",
-    "category": "optical",
+    "category": "оптик-хүрээ",
     "description": "Ажлын өдөр удаан зүүхэд хамар, чихэнд тухтай суух дөрвөлжин оптик хүрээ.",
     "price": 210000,
-    "image": "https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://images.unsplash.com/photo-1755869980879-1cc345f1980c?auto=format&fit=crop&w=1200&q=85",
     "featured": false
   },
   {
@@ -41,16 +41,16 @@
     "category": "new",
     "description": "Нэг хүрээнд оптик болон нарны шилний хэрэглээг хослуулах соронзон clip-on сет.",
     "price": 290000,
-    "image": "https://images.unsplash.com/photo-1743385729254-55aa926f24b4?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://images.unsplash.com/photo-1759933253608-ba60cfb8dcf0?auto=format&fit=crop&w=1200&q=85",
     "featured": true
   },
   {
     "id": "p006",
     "name": "Kids Comfort",
-    "category": "optical",
+    "category": "оптик-хүрээ",
     "description": "Хүүхдийн өдөр тутмын хөдөлгөөнд тохирсон бат бөх, уян хатан хүрээ.",
-    "price": 165000,
-    "image": "https://images.unsplash.com/photo-1486250944723-86bca2b15b06?auto=format&fit=crop&w=1200&q=80",
+    "price": 164999,
+    "image": "https://images.unsplash.com/photo-1760446031441-65f456460d59?auto=format&fit=crop&w=1200&q=85",
     "featured": false
   },
   {
@@ -59,7 +59,7 @@
     "category": "premium",
     "description": "Өндөр диоптртой хэрэглэгчдэд зориулсан нимгэн, хөнгөн, цэвэр харагдах линзний сонголт.",
     "price": 320000,
-    "image": "https://images.unsplash.com/photo-1517948430535-1e2469d314fe?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://images.unsplash.com/photo-1651199922386-60da638de82b?auto=format&fit=crop&w=1200&q=85",
     "featured": false
   },
   {
@@ -68,7 +68,7 @@
     "category": "sunglasses",
     "description": "Амралт, аялал, жолоодлогод тохирсон хөнгөн нарны шил.",
     "price": 195000,
-    "image": "https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://images.unsplash.com/photo-1760446031507-ed534e0f9605?auto=format&fit=crop&w=1200&q=85",
     "featured": false
   }
 ]

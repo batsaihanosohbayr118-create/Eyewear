@@ -7,11 +7,15 @@ import type { Product, Category } from "@/lib/db";
 export default function CollectionsGrid({
   products,
   categories,
+  initialCategory,
 }: {
   products: Product[];
   categories: Category[];
+  initialCategory?: string;
 }) {
-  const [active, setActive] = useState<string>("all");
+  const [active, setActive] = useState<string>(
+    categories.some((c) => c.slug === initialCategory) ? initialCategory! : "all"
+  );
 
   const filtered = useMemo(() => {
     if (active === "all") return products;
@@ -20,13 +24,13 @@ export default function CollectionsGrid({
 
   return (
     <div>
-      <div className="flex flex-wrap gap-x-6 gap-y-3 border-b border-line/50 pb-6 mb-10 md:mb-12 lg:gap-x-8">
+      <div className="flex flex-wrap gap-3 mb-10 md:mb-12">
         <button
           onClick={() => setActive("all")}
-          className={`text-[12px] tracking-[0.12em] uppercase pb-1 border-b transition-colors duration-300 md:text-[13px] md:tracking-[0.14em] ${
+          className={`h-10 px-5 text-[13px] border transition-colors duration-300 ${
             active === "all"
-              ? "text-ivory border-gold"
-              : "text-ivory/45 border-transparent hover:text-ivory/80"
+              ? "bg-gold border-gold text-ink"
+              : "border-ivory/20 text-ivory/70 hover:border-gold hover:text-gold-light"
           }`}
         >
           Бүгд
@@ -35,10 +39,10 @@ export default function CollectionsGrid({
           <button
             key={c.slug}
             onClick={() => setActive(c.slug)}
-            className={`text-[12px] tracking-[0.12em] uppercase pb-1 border-b transition-colors duration-300 md:text-[13px] md:tracking-[0.14em] ${
+            className={`h-10 px-5 text-[13px] border transition-colors duration-300 ${
               active === c.slug
-                ? "text-ivory border-gold"
-                : "text-ivory/45 border-transparent hover:text-ivory/80"
+                ? "bg-gold border-gold text-ink"
+                : "border-ivory/20 text-ivory/70 hover:border-gold hover:text-gold-light"
             }`}
           >
             {c.label}
@@ -51,9 +55,9 @@ export default function CollectionsGrid({
           Энэ ангилалд одоогоор бүтээгдэхүүн алга.
         </p>
       ) : (
-        <div className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-x-6 md:gap-y-12">
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} categories={categories} />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6">
+          {filtered.map((product, i) => (
+            <ProductCard key={product.id} product={product} categories={categories} index={i} />
           ))}
         </div>
       )}

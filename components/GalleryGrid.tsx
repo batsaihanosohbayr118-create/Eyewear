@@ -5,7 +5,7 @@ export default async function GalleryGrid() {
   const images = await getGalleryImages();
 
   return (
-    <div className="grid grid-cols-2 auto-rows-[180px] gap-2 md:auto-rows-[240px] md:gap-3 lg:grid-cols-3 lg:auto-rows-[220px]">
+    <div className="grid grid-flow-dense grid-cols-2 auto-rows-[180px] gap-2 md:auto-rows-[240px] md:gap-3 lg:grid-cols-3 lg:auto-rows-[220px]">
       {images.map((img) => (
         <div
           key={img.id}

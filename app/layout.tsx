@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Manrope, IBM_Plex_Mono } from "next/font/google";
+import { Cormorant_Garamond, Manrope, IBM_Plex_Mono } from "next/font/google";
 import { getSettings } from "@/lib/db";
 import SiteChrome from "@/components/SiteChrome";
 import "./globals.css";
 
-const display = Playfair_Display({
+// Render on every request: content comes from the admin (Vercel Blob), so a
+// build-time snapshot would go stale. Data reads are still cached in lib/db.ts.
+export const dynamic = "force-dynamic";
+
+const display = Cormorant_Garamond({
   subsets: ["latin", "cyrillic"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
 });
@@ -35,8 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: settings.seo.description,
     icons: {
-      icon: [{ url: "/favicon.svg?v=4", type: "image/svg+xml" }],
-      shortcut: [{ url: "/favicon.svg?v=4", type: "image/svg+xml" }],
+      icon: [{ url: "/favicon.svg?v=6", type: "image/svg+xml" }],
+      shortcut: [{ url: "/favicon.svg?v=6", type: "image/svg+xml" }],
     },
     openGraph: {
       title: settings.seo.defaultTitle,

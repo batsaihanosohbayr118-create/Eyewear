@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { put } from "@vercel/blob";
-import { nanoid } from "nanoid";
 import { createGalleryImage, getGalleryImages } from "@/lib/db";
+import { isAdmin, saveImage, UploadError } from "@/lib/image-upload";
 
-async function saveUploadedFile(file: File): Promise<string> {
-  const ext = file.name.split(".").pop() || "jpg";
-  const filename = `gallery/${nanoid(10)}.${ext}`;
-  const blob = await put(filename, file, {
-    access: "public",
-  });
-  return blob.url; // Vercel Blob-ийн бүрэн URL буцаана
-}
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const images = await getGalleryImages();
@@ -18,6 +10,10 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (!(await isAdmin(request))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const formData = await request.formData();
   const file = formData.get("file");
   const urlInput = formData.get("src");
@@ -33,7 +29,13 @@ export async function POST(request: NextRequest) {
 
   let src: string;
   if (file instanceof File && file.size > 0) {
-    src = await saveUploadedFile(file);
+    try {
+      src = await saveImage(file, "gallery");
+    } catch (err) {
+      const message =
+        err instanceof UploadError ? err.message : "Зураг хадгалахад алдаа гарлаа.";
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
   } else if (typeof urlInput === "string" && urlInput.trim()) {
     src = urlInput.trim();
   } else {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSettings, updateSettings } from "@/lib/db";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const settings = await getSettings();
   return NextResponse.json(settings);

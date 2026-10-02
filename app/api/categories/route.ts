@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCategories, createCategory } from "@/lib/db";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const categories = await getCategories();
   return NextResponse.json(categories);

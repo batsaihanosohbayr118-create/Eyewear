@@ -5,16 +5,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#061826",
-        charcoal: "#0d2e49",
-        ivory: "#f8fbff",
-        parchment: "#eaf6ff",
+        ink: "#0f0e0d",
+        charcoal: "#1b1917",
+        ivory: "#f4efe8",
+        parchment: "#ebe6de",
         gold: {
-          DEFAULT: "#0068ff",
-          light: "#49b6ff",
-          dark: "#0046b8",
+          DEFAULT: "#c4a46f",
+          light: "#d9c096",
+          dark: "#94743f",
         },
-        line: "#8ec8ee",
+        line: "#6b6259",
       },
       fontFamily: {
         display: ["var(--font-display)", "serif"],
