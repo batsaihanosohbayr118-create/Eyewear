@@ -80,20 +80,30 @@ export default function Hero({ settings }: { settings: Settings }) {
         </div>
       </div>
 
-      {/* Vertical scroll hint */}
-      <div
-        className={`absolute left-6 xl:left-10 top-1/2 z-10 hidden lg:flex -translate-y-1/2 flex-col items-center gap-4 transition-opacity duration-700 ${
+      {/* Vertical scroll hint — a gold light runs down the line; click scrolls past the hero */}
+      <button
+        type="button"
+        onClick={(e) => {
+          const hero = e.currentTarget.closest("section");
+          if (hero) window.scrollTo({ top: hero.offsetTop + hero.offsetHeight, behavior: "smooth" });
+        }}
+        aria-label="Доош гүйлгэх"
+        className={`group absolute left-6 xl:left-10 top-1/2 z-10 hidden lg:flex -translate-y-1/2 flex-col items-center gap-4 transition-opacity duration-700 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
         style={{ transitionDelay: "1100ms" }}
       >
-        <span className="text-[10px] tracking-[0.3em] text-ivory/60 [writing-mode:vertical-rl] rotate-180">
+        <span className="text-[10px] tracking-[0.3em] text-ivory/60 [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 group-hover:text-gold-light">
           SCROLL
         </span>
-        <span className="relative w-px h-24 bg-ivory/30">
-          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 border-r border-b border-ivory/50 rotate-45" />
+        <span className="flex flex-col items-center">
+          <span className="relative block w-[3px] h-24 overflow-hidden">
+            <span className="absolute left-px top-0 h-full w-px bg-ivory/20" />
+            <span className="absolute left-0 top-0 h-1/2 w-[3px] rounded-full bg-gradient-to-b from-transparent via-gold-light to-transparent shadow-[0_0_8px_rgba(217,192,150,0.8)] animate-[scrollLine_2.4s_cubic-bezier(0.65,0,0.35,1)_infinite]" />
+          </span>
+          <span className="-mt-2 block w-2 h-2 border-r border-b border-gold-light/80 transition-colors duration-300 group-hover:border-gold-light animate-[scrollArrow_2.4s_ease-in-out_infinite]" />
         </span>
-      </div>
+      </button>
 
       {/* Right-side tagline */}
       <div

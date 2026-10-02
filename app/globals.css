@@ -98,3 +98,13 @@ body {
   color: #0f0e0d;
   border-color: #c4a46f;
 }
+
+/* Hero scroll hint: light travelling down the line + bobbing arrow */
+@keyframes scrollLine {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+@keyframes scrollArrow {
+  0%, 100% { transform: translateY(0) rotate(45deg); opacity: 0.6; }
+  50% { transform: translateY(6px) rotate(45deg); opacity: 1; }
+}
